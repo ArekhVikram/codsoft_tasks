@@ -1,6 +1,6 @@
 # CODSOFT Web Development Internship: Tasks
 
-Extract the whole zip, then double-click **`index.html`** in this folder. It links to both projects.
+Extract the whole zip, then double-click **`index.html`** in this folder. It links to all three projects.
 
 | Folder | Task | Open |
 |---|---|---|
