@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVA SUPPLY — Objects for Everyday Living (Standalone Preview)</title>
+  <meta name="description" content="NOVA SUPPLY - Modern lifestyle and technology brand. CODSOFT Web Development Level 3 Task 1.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #FAF8F5;
+      --bg-secondary: #F4F1EA;
+      --bg-card: #FFFFFF;
+      --bg-dark: #191817;
+      --text-primary: #1A1918;
+      --text-secondary: #5C5954;
+      --text-muted: #8E8A83;
+      --text-inverse: #FAF8F5;
+      --border-subtle: #E7E3D8;
+      --border-medium: #D3CEC2;
+      --accent-olive: #3D4734;
+      --accent-olive-light: #EBF0E6;
+      --accent-rust: #B85333;
+      --font-serif: 'Newsreader', 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --radius-sm: 3px;
+      --shadow-subtle: 0 2px 8px rgba(26, 25, 24, 0.04);
+      --shadow-card: 0 4px 16px rgba(26, 25, 24, 0.06);
+      --shadow-drawer: -4px 0 24px rgba(26, 25, 24, 0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 400; line-height: 1.2; color: var(--text-primary); }
+    p { color: var(--text-secondary); line-height: 1.65; }
+    a { color: inherit; text-decoration: none; cursor: pointer; }
+    button { font-family: var(--font-sans); cursor: pointer; border: none; background: transparent; outline: none; }
+    input, select, textarea {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--text-primary);
+      outline: 2px solid var(--accent-olive);
+    }
+    .container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+    @media (min-width: 768px) { .container { padding: 0 2.5rem; } }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn-primary { background: var(--text-primary); color: #FAF8F5; border: 1px solid var(--text-primary); }
+    .btn-primary:hover { background: #2B2927; }
+    .btn-secondary { background: transparent; color: var(--text-primary); border: 1px solid var(--border-medium); }
+    .btn-secondary:hover { background: var(--bg-secondary); }
+    .btn-full { width: 100%; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+    }
+    .badge-olive { background: var(--accent-olive-light); color: var(--accent-olive); }
+    .badge-charcoal { background: #242220; color: #FAF8F5; }
+    .badge-rust { background: #FBEFEA; color: var(--accent-rust); }
+    .section-header { margin-bottom: 2.5rem; }
+    .section-eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-olive); display: block; margin-bottom: 0.35rem; }
+    .section-title { font-size: 2.5rem; }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.75rem;
+    }
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .product-card img { width: 100%; height: 280px; object-fit: cover; background: #EEEBE3; }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,25,24,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,25,24,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .drawer-content {
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-drawer);
+    }
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+    }
+    .toast-msg {
+      background: #1A1918;
+      color: #FAF8F5;
+      padding: 12px 18px;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- Announcement Bar -->
+  <aside style="background: #191817; color: #FAF8F5; font-size: 0.75rem; padding: 0.55rem 1rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+    <span>✦ Complimentary carbon-neutral dispatch over $100</span>
+    <span>Use code <strong>NOVA10</strong> for 10% off</span>
+    <span style="color: #A3E5B9;">● Standalone Direct Preview (CODSOFT Level 3)</span>
+  </aside>
+
+  <!-- Navbar -->
+  <header style="position: sticky; top: 0; z-index: 100; background: rgba(250, 248, 245, 0.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-subtle);">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; height: 72px;">
+      <!-- Brand Logo -->
+      <div>
+        <a href="#" onclick="showSection('home'); return false;" style="font-family: var(--font-serif); font-size: 1.6rem; font-weight: 600; letter-spacing: 0.08em;">
+          NOVA SUPPLY
+        </a>
+        <div style="font-size: 0.65rem; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase;">
+          Objects for Everyday Living
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav style="display: flex; gap: 1.5rem; font-size: 0.85rem; font-weight: 500; text-transform: uppercase;">
+        <a href="#" onclick="showSection('shop', 'All'); return false;">All Objects</a>
+        <a href="#" onclick="showSection('shop', 'Audio'); return false;">Audio</a>
+        <a href="#" onclick="showSection('shop', 'Workspace'); return false;">Workspace</a>
+        <a href="#" onclick="showSection('shop', 'Living'); return false;">Living</a>
+        <a href="#" onclick="showSection('shop', 'Carry'); return false;">Carry</a>
+        <a href="#" onclick="showSection('about'); return false;">Philosophy</a>
+        <a href="#" onclick="showSection('contact'); return false;">Contact</a>
+      </nav>
+
+      <!-- Actions -->
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <button onclick="openAccountModal()" style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; padding: 0.4rem 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="nav-user-label">Demo User</span>
+        </button>
+
+        <button onclick="toggleCartDrawer(true)" style="background: var(--text-primary); color: #FAF8F5; padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 0.5rem;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span id="cart-counter" style="font-weight: 600; font-size: 0.85rem;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER (Dynamically switched) -->
+  <main style="flex: 1;">
+    <!-- SECTION 1: HOME -->
+    <div id="section-home">
+      <!-- Hero -->
+      <section style="padding: 4.5rem 0 5rem; background: var(--bg-primary);">
+        <div class="container" style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 3.5rem; align-items: center;">
+          <div>
+            <span class="section-eyebrow">Autumn Release 04 · Studio Edition</span>
+            <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.1; margin: 0.5rem 0 1.25rem;">
+              Objects for everyday living.
+            </h1>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 520px;">
+              A deliberate collection of acoustic tools, machined workspace instruments, and honest living goods designed to bring quiet utility to your everyday life.
+            </p>
+            <div style="display: flex; gap: 1rem;">
+              <button onclick="showSection('shop', 'All')" class="btn btn-primary" style="padding: 1rem 2rem;">
+                Explore Collection →
+              </button>
+              <button onclick="showSection('about')" class="btn btn-secondary" style="padding: 1rem 1.75rem;">
+                Our Philosophy
+              </button>
+            </div>
+            <div style="display: flex; gap: 2rem; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); font-size: 0.85rem;">
+              <div><strong>Honest Materials</strong><br><span style="color:var(--text-muted)">Walnut, brass & flax</span></div>
+              <div><strong>Carbon Neutral</strong><br><span style="color:var(--text-muted)">Verified transport offset</span></div>
+              <div><strong>2-Year Warranty</strong><br><span style="color:var(--text-muted)">Direct studio repair</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-card);">
+              <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&auto=format&fit=crop&q=80" alt="Headphones" style="width: 100%; height: 480px; object-fit: cover;">
+              <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(250,248,245,0.95); backdrop-filter: blur(8px); padding: 1rem 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); max-width: 280px;">
+                <span class="badge badge-olive">Featured Release</span>
+                <h4 style="margin: 0.25rem 0;">Studio Monitor Headphones Mk. II</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                  <strong style="font-size: 0.95rem;">$295.00</strong>
+                  <button onclick="openProductModal('nova-01')" style="color: var(--accent-olive); font-weight: 600; text-decoration: underline; font-size: 0.8rem;">Inspect Object →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Categories Section -->
+      <section style="padding: 4.5rem 0;">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-eyebrow">Curated Collections</span>
+            <h2 class="section-title">Designed for every room & journey</h2>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;" id="category-cards-container">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Best Sellers -->
+      <section style="padding: 4.5rem 0; background: var(--bg-secondary);">
+        <div class="container">
+          <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <span class="section-eyebrow">Enduring Favorites</span>
+              <h2 class="section-title">Best-Selling Objects</h2>
+            </div>
+            <button onclick="showSection('shop', 'All')" style="color: var(--accent-olive); font-weight: 600; text-decoration: underline;">
+              View All 14 Objects →
+            </button>
+          </div>
+          <div class="product-grid" id="bestsellers-grid"></div>
+        </div>
+      </section>
+
+      <!-- Editorial Quote Banner -->
+      <section style="padding: 5.5rem 0; background: #191817; color: #FAF8F5;">
+        <div class="container" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: center;">
+          <div>
+            <span style="color: #C49B66; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;">The Material Manifesto</span>
+            <h2 style="font-size: 2.8rem; color: #FAF8F5; margin: 1rem 0 1.5rem; line-height: 1.2;">
+              “We do not design objects to fill spaces. We design objects to empty minds.”
+            </h2>
+            <p style="color: #A8A49C; font-size: 1rem; line-height: 1.7; margin-bottom: 2rem;">
+              Every dial on the Type-01 keyboard, every curve of the Nanbu cast iron kettle, and every stitch of our Tuscan bridle leather case exists because it performs an authentic physical function. No plastic veneers.
+            </p>
+            <button onclick="showSection('about')" class="btn" style="background: #FAF8F5; color: #191817;">
+              Read Studio Monograph →
+            </button>
+          </div>
+          <div>
+            <img src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=800&auto=format&fit=crop&q=80" alt="Brass Craft" style="width: 100%; height: 420px; object-fit: cover; border-radius: var(--radius-sm);">
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SECTION 2: SHOP -->
+    <div id="section-shop" style="display: none; padding: 3rem 0 6rem;">
+      <div class="container">
+        <div style="margin-bottom: 2.5rem;">
+          <span class="section-eyebrow">Catalog Overview</span>
+          <h1 id="shop-heading" style="font-size: 2.5rem; margin: 0.25rem 0 0.5rem;">All Living Objects</h1>
+          <p>Understated acoustic gear, milled desk accessories, and living goods crafted from enduring materials.</p>
+        </div>
+
+        <!-- Filter Controls Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-bottom: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-subtle);">
+          <!-- Category Tabs -->
+          <div style="display: flex; gap: 0.5rem;" id="shop-category-buttons">
+            <button class="btn btn-secondary btn-sm" onclick="setShopCategory('All')" id="btn-cat-All">All</button>
+            <button class="btn btn-secondary btn-sm" onclick="setShopCategory('Audio')" id="btn-cat-Audio">Audio</button>
+            <button class="btn btn-secondary btn-sm" onclick="setShopCategory('Workspace')" id="btn-cat-Workspace">Workspace</button>
+            <button class="btn btn-secondary btn-sm" onclick="setShopCategory('Living')" id="btn-cat-Living">Living</button>
+            <button class="btn btn-secondary btn-sm" onclick="setShopCategory('Carry')" id="btn-cat-Carry">Carry</button>
+          </div>
+
+          <!-- Search & Sort -->
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <input type="text" id="shop-search" placeholder="Search objects..." oninput="handleShopSearch()" style="width: 220px; padding: 0.5rem 0.85rem; font-size: 0.85rem;">
+            <select id="shop-sort" onchange="renderShopGrid()" style="width: auto; padding: 0.5rem 0.85rem; font-size: 0.85rem;">
+              <option value="featured">Featured First</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Catalog Grid -->
+        <div class="product-grid" id="shop-products-grid"></div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: ABOUT -->
+    <div id="section-about" style="display: none; padding: 4rem 0 6rem;">
+      <div class="container" style="max-width: 860px;">
+        <span class="section-eyebrow">Studio Monograph</span>
+        <h1 style="font-size: 3.25rem; margin: 0.5rem 0 1.5rem;">Objects for everyday living.</h1>
+        <p style="font-size: 1.15rem; line-height: 1.7; margin-bottom: 3rem;">
+          NOVA SUPPLY was established on a single foundational premise: that the physical instruments we touch each day should possess tactile honesty, acoustic calm, and structural permanence.
+        </p>
+        <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=1000&auto=format&fit=crop&q=80" alt="Workshop" style="width: 100%; height: 420px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 3rem;">
+        <div style="display: flex; flex-direction: column; gap: 2.5rem; font-size: 1rem; line-height: 1.75;">
+          <div>
+            <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">01 / Reductive Form</h3>
+            <p>Modern consumer products shout for attention through glossy plastic, RGB LEDs, and excessive surface complexity. We take the opposing path: resolving tolerances until nothing non-essential remains.</p>
+          </div>
+          <div>
+            <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">02 / Honest Metallurgy</h3>
+            <p>We machine our desk risers from continuous aerospace aluminium, weave our throws from Flemish flax, and cast kettles using centuries-old Nanbu tekki metallurgy.</p>
+          </div>
+          <div style="background: var(--bg-secondary); padding: 2rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+            <strong style="display: block; font-size: 1.1rem; margin-bottom: 0.5rem;">CODSOFT Web Development Internship · Level 3, Task 1</strong>
+            <p style="font-size: 0.9rem;">This project fulfills Level 3, Task 1: an editorial-grade, full-stack e-commerce experience featuring authoritative pricing, inventory tracking, token auth, and simulated payment workflows.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: CONTACT -->
+    <div id="section-contact" style="display: none; padding: 4rem 0 6rem;">
+      <div class="container" style="max-width: 860px;">
+        <span class="section-eyebrow">Studio Communications</span>
+        <h1 style="font-size: 3rem; margin: 0.5rem 0 1rem;">Transmit a Dispatch</h1>
+        <p style="margin-bottom: 2.5rem;">Have questions regarding custom specifications, wholesale partnerships, or object care? Our team responds within 24 hours.</p>
+        <form onsubmit="handleContactSubmit(event)" style="background: var(--bg-card); padding: 2.5rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 1.25rem;">
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Full Name *</label>
+            <input type="text" id="contact-name" required placeholder="Julian Chen">
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Email Address *</label>
+            <input type="email" id="contact-email" required placeholder="julian@domain.com">
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Topic</label>
+            <select id="contact-topic">
+              <option>General Object Inquiry</option>
+              <option>Warranty & Servicing</option>
+              <option>CODSOFT Project Review Feedback</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Message *</label>
+            <textarea id="contact-msg" rows="4" required placeholder="Your inquiry..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 0.85rem 2rem;">Transmit Dispatch →</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- CART DRAWER -->
+  <div id="cart-drawer-backdrop" class="drawer-backdrop" style="display: none;" onclick="toggleCartDrawer(false)">
+    <div class="drawer-content" onclick="event.stopPropagation()">
+      <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);">
+        <h3 style="font-family: var(--font-sans); font-size: 1.1rem; font-weight: 600;">Shopping Bag (<span id="drawer-count">0</span>)</h3>
+        <button onclick="toggleCartDrawer(false)" style="font-size: 1.5rem; color: var(--text-muted);">&times;</button>
+      </div>
+      <!-- Free shipping progress -->
+      <div style="padding: 0.85rem 1.5rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); font-size: 0.8rem;" id="drawer-shipping-bar">
+        <!-- Rendered by JS -->
+      </div>
+      <!-- Items List -->
+      <div style="flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem;" id="drawer-items-list">
+        <!-- Rendered by JS -->
+      </div>
+      <!-- Drawer Footer -->
+      <div style="padding: 1.5rem; border-top: 1px solid var(--border-subtle); background: var(--bg-card);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
+          <span style="color: var(--text-secondary); font-size: 0.9rem;">Subtotal</span>
+          <strong style="font-size: 1.4rem;" id="drawer-subtotal">$0.00</strong>
+        </div>
+        <button onclick="openCheckoutModal()" class="btn btn-primary btn-full" style="padding: 1rem;">Proceed to Demo Checkout →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div id="product-modal-backdrop" class="modal-backdrop" style="display: none;" onclick="closeProductModal()">
+    <div style="background: var(--bg-card); width: 100%; max-width: 840px; border-radius: var(--radius-sm); overflow: hidden; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-card);" onclick="event.stopPropagation()">
+      <div style="display: grid; grid-template-columns: 1fr 1.1fr;" id="modal-product-content">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkout-modal-backdrop" class="modal-backdrop" style="display: none;" onclick="closeCheckoutModal()">
+    <div style="background: var(--bg-card); width: 100%; max-width: 680px; border-radius: var(--radius-sm); padding: 2rem; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-card);" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.8rem;">Demo Checkout</h2>
+        <button onclick="closeCheckoutModal()" style="font-size: 1.5rem;">&times;</button>
+      </div>
+      <div style="background: #FFF8E6; border: 1px solid #E6CA85; padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.825rem; color: #684500; margin-bottom: 1.5rem;">
+        <strong>DEMO SIMULATION:</strong> No real payment is charged. Order totals and stock limits are calculated securely.
+      </div>
+      <form onsubmit="handlePlaceOrder(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div><label style="font-size: 0.8rem; font-weight: 600;">Full Name *</label><input type="text" id="chk-name" value="Alex Vane" required></div>
+          <div><label style="font-size: 0.8rem; font-weight: 600;">Email *</label><input type="email" id="chk-email" value="alex@novasupply.com" required></div>
+        </div>
+        <div><label style="font-size: 0.8rem; font-weight: 600;">Street Address *</label><input type="text" id="chk-street" value="420 Greenpoint Ave, Loft 3B" required></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+          <div><label style="font-size: 0.8rem; font-weight: 600;">City *</label><input type="text" id="chk-city" value="Brooklyn" required></div>
+          <div><label style="font-size: 0.8rem; font-weight: 600;">State *</label><input type="text" id="chk-state" value="NY" required></div>
+          <div><label style="font-size: 0.8rem; font-weight: 600;">ZIP *</label><input type="text" id="chk-zip" value="11222" required></div>
+        </div>
+        <!-- Promo Code -->
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;">
+          <input type="text" id="chk-promo" placeholder="Promo code (e.g. NOVA10)" style="font-size: 0.85rem; padding: 0.5rem;">
+          <button type="button" onclick="applyCheckoutPromo()" class="btn btn-secondary btn-sm" style="white-space: nowrap;">Apply Code</button>
+        </div>
+        <div id="chk-promo-status" style="font-size: 0.75rem; color: var(--accent-olive);"></div>
+        <!-- Total breakdown -->
+        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-sm); font-size: 0.875rem; margin-top: 0.5rem;" id="chk-summary">
+          <!-- Rendered by JS -->
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="padding: 1rem; margin-top: 0.5rem;">Authorize Test Order →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ORDER RECEIPT CONFIRMATION MODAL -->
+  <div id="receipt-modal-backdrop" class="modal-backdrop" style="display: none;" onclick="closeReceiptModal()">
+    <div style="background: var(--bg-card); width: 100%; max-width: 600px; border-radius: var(--radius-sm); padding: 2.5rem; text-align: center; box-shadow: var(--shadow-card);" onclick="event.stopPropagation()">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--accent-olive-light); color: var(--accent-olive); display: inline-flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1rem;">✓</div>
+      <h2 style="font-size: 2.2rem; margin-bottom: 0.25rem;">Order Confirmed</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Reference <strong id="receipt-ref" style="color: var(--text-primary);">NOVA-000000</strong> has been registered in the studio log.</p>
+      <div id="receipt-details" style="text-align: left; background: var(--bg-secondary); padding: 1.25rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1.5rem;"></div>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button onclick="window.print()" class="btn btn-secondary">Print Receipt</button>
+        <button onclick="closeReceiptModal()" class="btn btn-primary">Continue Browsing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT MODAL -->
+  <div id="account-modal-backdrop" class="modal-backdrop" style="display: none;" onclick="closeAccountModal()">
+    <div style="background: var(--bg-card); width: 100%; max-width: 580px; border-radius: var(--radius-sm); padding: 2rem; box-shadow: var(--shadow-card);" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.75rem;">Client Dashboard</h2>
+        <button onclick="closeAccountModal()" style="font-size: 1.5rem;">&times;</button>
+      </div>
+      <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 1rem; margin-bottom: 1rem;">
+        <strong>Alex Vane</strong> · alex@novasupply.com<br>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Verified Demo Account · Member since Jan 2026</span>
+      </div>
+      <h4 style="margin-bottom: 0.75rem; font-family: var(--font-sans); font-size: 0.95rem; font-weight: 600;">Past Order History</h4>
+      <div id="account-orders-list" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 240px; overflow-y: auto;">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="background: #191817; color: #FAF8F5; padding: 4rem 0 2rem; margin-top: auto; border-top: 1px solid #282624;">
+    <div class="container" style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+      <div>
+        <span style="font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600; display: block; margin-bottom: 0.5rem;">NOVA SUPPLY</span>
+        <p style="color: #A8A49C; font-size: 0.85rem; max-width: 360px;">Objects for everyday living. Designed with restraint, crafted from honest tactile materials.</p>
+        <div style="margin-top: 1rem; font-size: 0.75rem; color: #88847C; border: 1px solid #383531; display: inline-block; padding: 0.25rem 0.6rem; border-radius: 3px;">
+          CODSOFT Web Development Internship · Level 3, Task 1
+        </div>
+      </div>
+      <div>
+        <h4 style="font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Explore</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; color: #A8A49C;">
+          <a onclick="showSection('shop', 'Audio')">Audio Monitors</a>
+          <a onclick="showSection('shop', 'Workspace')">Workspace Systems</a>
+          <a onclick="showSection('shop', 'Living')">Living & Vessels</a>
+          <a onclick="showSection('shop', 'Carry')">Luggage & Carry</a>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-family: var(--font-sans); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Studio</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; color: #A8A49C;">
+          <a onclick="showSection('about')">Design Philosophy</a>
+          <a onclick="showSection('contact')">Showroom Inquiries</a>
+          <a onclick="openAccountModal()">Order Dispatches</a>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="border-top: 1px solid #282624; padding-top: 1.5rem; font-size: 0.75rem; color: #777; display: flex; justify-content: space-between;">
+      <span>© 2026 NOVA SUPPLY CO. Built for CODSOFT Internship Level 3 Task 1.</span>
+      <span>Simulated Demo Store</span>
+    </div>
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <!-- EMBEDDED COMPLETE DATA AND APP ENGINE (Zero External Server Required) -->
+  <script>
+    // 14 Curated Products
+    const PRODUCTS = [
+      { id: "nova-01", slug: "studio-monitor-headphones-mk2", name: "Studio Monitor Headphones Mk. II", subtitle: "Precision acoustic tuning with custom 45mm neodymium drivers", category: "Audio", price: 295, originalPrice: 340, rating: 4.9, stock: 14, badge: "Best Seller", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80", desc: "Constructed for mastering engineers and discerning listeners alike. Features ultra-rigid anodized earcups, memory foam pads draped in vegan protein leather, and an open soundstage with distortion under 0.05%." },
+      { id: "nova-02", slug: "anodized-desk-shelf-system", name: "Modular Desk Shelf System", subtitle: "Elevate your display and reclaim 40% more workspace real estate", category: "Workspace", price: 180, originalPrice: 180, rating: 4.8, stock: 9, badge: "Essential", image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80", desc: "Machined from a continuous sheet of solid 5mm aerospace aluminium with an American walnut top surface. Creates ergonomic elevation with cable channel." },
+      { id: "nova-03", slug: "cast-iron-kettle-tea-set", name: "Tetsubin Cast Iron Kettle & Cup Set", subtitle: "Traditional Nanbu tekki metallurgy refined for induction cooking", category: "Living", price: 145, originalPrice: 165, rating: 5.0, stock: 6, badge: "New Arrival", image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800&auto=format&fit=crop&q=80", desc: "Heavyweight cast iron kettle with an interior porcelain enamel glaze. Retains heat for over 90 minutes while softening tap water minerality." },
+      { id: "nova-04", slug: "waxed-canvas-weekender-bag", name: "Overnight Canvas Duffle 38L", subtitle: "Weatherproof 18oz Scottish canvas with full-grain bridle leather straps", category: "Carry", price: 260, originalPrice: 290, rating: 4.8, stock: 11, badge: "Staff Pick", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80", desc: "Sized precisely for international overhead bins. Hand-waxed duck canvas repels monsoon downpours with padded 16\" laptop compartment." },
+      { id: "nova-05", slug: "solid-brass-rollerball-pen", name: "Architectural Machined Brass Pen", subtitle: "Weighted hexagonal barrel that patinas uniquely to your hand", category: "Workspace", price: 68, originalPrice: 68, rating: 4.7, stock: 25, badge: "Best Seller", image: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=800&auto=format&fit=crop&q=80", desc: "Milled from a single hexagonal bar of lead-free brass. Balanced at fingertips with satisfying magnetic closure." },
+      { id: "nova-06", slug: "stone-diffuser-humidifier", name: "Porcelain Cold Ultrasonic Diffuser", subtitle: "Whisper-quiet ambient scenting crafted from matte ceramic", category: "Living", price: 110, originalPrice: 130, rating: 4.9, stock: 8, badge: "New Arrival", image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&auto=format&fit=crop&q=80", desc: "Uses 2.5MHz ultrasonic vibrations to mist pure botanical oils into 500 sq. ft. spaces without heat degradation." },
+      { id: "nova-07", slug: "hifi-desktop-bookshelf-speakers", name: "Resonant Hi-Fi Desktop Speakers", subtitle: "Acoustic wooden enclosures with Bluetooth 5.3 aptX HD and USB DAC", category: "Audio", price: 360, originalPrice: 420, rating: 4.9, stock: 5, badge: "Limited Run", image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&auto=format&fit=crop&q=80", desc: "Engineered with 4-inch Kevlar woofers and silk dome tweeters encased in heavy MDF acoustic cabinets wrapped in raw walnut veneer." },
+      { id: "nova-08", slug: "minimal-linen-bed-throw", name: "Washed Belgian Linen Throw", subtitle: "Stonewashed pure flax woven on vintage shuttle looms in Flanders", category: "Living", price: 92, originalPrice: 110, rating: 4.6, stock: 15, badge: null, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&auto=format&fit=crop&q=80", desc: "Breathable in summer and insulating during winter. Stone-washed for immediate softness without harsh chemical enzymes." },
+      { id: "nova-09", slug: "leather-mag-cardholder-wallet", name: "Magnetic Accordion Card Case", subtitle: "Holds up to 8 cards and folded currency with RFID shield protection", category: "Carry", price: 54, originalPrice: 54, rating: 4.7, stock: 18, badge: "Best Seller", image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80", desc: "Slim silhouette engineered to disappear into front pockets. Vegetable-tanned buttero leather from Tuscany." },
+      { id: "nova-10", slug: "mechanical-keyboard-custom-slate", name: "NOVA Type-01 Mechanical Keyboard", subtitle: "Gasket-mounted CNC aluminium chassis with hot-swappable switches", category: "Workspace", price: 240, originalPrice: 270, rating: 5.0, stock: 4, badge: "Low Stock", image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80", desc: "A typing experience tuned like an instrument. Five layers of PORON sound dampening deliver a deep marble acoustic signature." },
+      { id: "nova-11", slug: "handblown-borosilicate-carafe", name: "Hourglass Water Carafe & Tumbler", subtitle: "Thermal shock-resistant laboratory glass designed for bedside or desk", category: "Living", price: 58, originalPrice: 65, rating: 4.8, stock: 20, badge: "New Arrival", image: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=800&auto=format&fit=crop&q=80", desc: "The drinking tumbler nests inverted over the mouth of the carafe to keep water clean through the night." },
+      { id: "nova-12", slug: "felt-leather-desk-mat", name: "Merino Wool & Saddle Leather Desk Mat", subtitle: "Natural thermal regulation and smooth optical mouse tracking", category: "Workspace", price: 74, originalPrice: 74, rating: 4.6, stock: 16, badge: "Best Seller", image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&auto=format&fit=crop&q=80", desc: "Combines 3mm natural Bavarian merino wool felt with a side accent of vegetable-tanned chestnut leather." },
+      { id: "nova-13", slug: "tech-organizer-cable-case", name: "Cordura Tech Pouch Organiser", subtitle: "Origami-style accordion storage for chargers, drives, and stylus pens", category: "Carry", price: 49, originalPrice: 59, rating: 4.8, stock: 12, badge: null, image: "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80", desc: "Opens completely flat like a clamshell for instant visibility. 15 tailored elastic organizing loops." },
+      { id: "nova-14", slug: "analog-wall-desk-clock", name: "Brushed Aluminium Silent Sweep Clock", subtitle: "Continuous movement without ticking sound, readable at 20 paces", category: "Living", price: 88, originalPrice: 88, rating: 4.7, stock: 0, badge: "Out of Stock", image: "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=800&auto=format&fit=crop&q=80", desc: "Features a spun aluminium dial with debossed indices and silent German quartz sweep movement." }
+    ];
+
+    // State
+    let cart = [];
+    let currentCategory = 'All';
+    let currentPromo = null;
+    let pastOrders = [
+      { orderNumber: "NOVA-782194", date: "Sep 20, 2026", items: "Studio Monitor Headphones Mk. II (1), Brass Pen (1)", total: 392.04, status: "Delivered" }
+    ];
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast-msg';
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    function showSection(name, cat) {
+      ['home', 'shop', 'about', 'contact'].forEach(s => {
+        document.getElementById('section-' + s).style.display = (s === name) ? 'block' : 'none';
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (name === 'shop' && cat) {
+        setShopCategory(cat);
+      }
+    }
+
+    function renderCard(p) {
+      const isOut = p.stock <= 0;
+      return `
+        <div class="product-card">
+          <div style="position: relative; cursor: pointer;" onclick="openProductModal('${p.id}')">
+            <img src="${p.image}" alt="${p.name}">
+            ${p.badge ? `<span class="badge ${p.badge.includes('Best') ? 'badge-charcoal' : 'badge-olive'}" style="position: absolute; top: 10px; left: 10px;">${p.badge}</span>` : ''}
+            ${isOut ? `<span class="badge badge-rust" style="position: absolute; top: 10px; left: 10px;">Sold Out</span>` : ''}
+          </div>
+          <div style="padding: 1.25rem; display: flex; flex-direction: column; flex: 1; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--accent-olive); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">
+                <span>${p.category}</span>
+                <span>★ ${p.rating}</span>
+              </div>
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem; cursor: pointer;" onclick="openProductModal('${p.id}')">${p.name}</h3>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${p.subtitle}</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+              <span style="font-size: 1.1rem; font-weight: 600;">$${p.price}</span>
+              <button onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''} class="btn btn-secondary btn-sm" style="${isOut ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                ${isOut ? 'Sold Out' : '+ Quick Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initHome() {
+      // Categories Grid
+      const cats = [
+        { name: 'Audio Systems', cat: 'Audio', img: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&auto=format&fit=crop&q=80' },
+        { name: 'Workspace', cat: 'Workspace', img: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&auto=format&fit=crop&q=80' },
+        { name: 'Living & Vessels', cat: 'Living', img: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&auto=format&fit=crop&q=80' },
+        { name: 'Carry & Bags', cat: 'Carry', img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80' }
+      ];
+      document.getElementById('category-cards-container').innerHTML = cats.map(c => `
+        <div onclick="showSection('shop', '${c.cat}')" style="position: relative; height: 320px; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; display: flex; align-items: flex-end; padding: 1.5rem; color: #fff;">
+          <img src="${c.img}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+          <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
+          <div style="position: relative; z-index: 2;">
+            <h3 style="font-size: 1.4rem; color: #fff;">${c.name}</h3>
+            <span style="font-size: 0.8rem; text-decoration: underline;">Explore Collection →</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Best sellers
+      const best = PRODUCTS.filter(p => p.badge && p.badge.includes('Best')).slice(0, 4);
+      document.getElementById('bestsellers-grid').innerHTML = best.map(renderCard).join('');
+    }
+
+    function setShopCategory(cat) {
+      currentCategory = cat;
+      document.getElementById('shop-heading').textContent = (cat === 'All') ? 'All Living Objects' : cat + ' Collection';
+      ['All', 'Audio', 'Workspace', 'Living', 'Carry'].forEach(c => {
+        const btn = document.getElementById('btn-cat-' + c);
+        if (btn) {
+          btn.className = (c === cat) ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+        }
+      });
+      renderShopGrid();
+    }
+
+    function handleShopSearch() {
+      renderShopGrid();
+    }
+
+    function renderShopGrid() {
+      const q = document.getElementById('shop-search').value.toLowerCase().trim();
+      const sort = document.getElementById('shop-sort').value;
+
+      let list = PRODUCTS.filter(p => {
+        const matchCat = (currentCategory === 'All') || (p.category === currentCategory);
+        const matchQ = !q || p.name.toLowerCase().includes(q) || p.subtitle.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+        return matchCat && matchQ;
+      });
+
+      if (sort === 'price-low') list.sort((a,b) => a.price - b.price);
+      else if (sort === 'price-high') list.sort((a,b) => b.price - a.price);
+      else if (sort === 'rating') list.sort((a,b) => b.rating - a.rating);
+
+      const grid = document.getElementById('shop-products-grid');
+      if (list.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem;"><h3>No objects match your search</h3><button onclick="setShopCategory(\'All\')" class="btn btn-secondary" style="margin-top: 1rem;">Reset Filters</button></div>';
+      } else {
+        grid.innerHTML = list.map(renderCard).join('');
+      }
+    }
+
+    function addToCart(productId, qty = 1) {
+      const p = PRODUCTS.find(x => x.id === productId);
+      if (!p || p.stock <= 0) return;
+
+      const existing = cart.find(x => x.id === productId);
+      if (existing) {
+        if (existing.qty + qty > p.stock) {
+          showToast(`Reached inventory limit for ${p.name}`);
+          return;
+        }
+        existing.qty += qty;
+      } else {
+        cart.push({ ...p, qty });
+      }
+
+      updateCartUI();
+      showToast(`Added ${p.name} to shopping bag.`);
+      toggleCartDrawer(true);
+    }
+
+    function updateCartUI() {
+      const count = cart.reduce((acc, i) => acc + i.qty, 0);
+      document.getElementById('cart-counter').textContent = count;
+      document.getElementById('drawer-count').textContent = count;
+
+      const subtotal = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
+      document.getElementById('drawer-subtotal').textContent = '$' + subtotal.toFixed(2);
+
+      // Shipping progress
+      const bar = document.getElementById('drawer-shipping-bar');
+      if (subtotal >= 100) {
+        bar.innerHTML = '<span style="color: var(--accent-olive); font-weight: 600;">✓ You have unlocked free carbon-neutral shipping!</span>';
+      } else {
+        bar.innerHTML = `Add <strong>$${(100 - subtotal).toFixed(2)}</strong> more for complimentary delivery.`;
+      }
+
+      // Items list
+      const list = document.getElementById('drawer-items-list');
+      if (cart.length === 0) {
+        list.innerHTML = '<div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">Your shopping bag is empty.</div>';
+      } else {
+        list.innerHTML = cart.map(item => `
+          <div style="display: flex; gap: 1rem; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); align-items: center;">
+            <img src="${item.image}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 3px;">
+            <div style="flex: 1;">
+              <h4 style="font-family: var(--font-sans); font-size: 0.9rem; font-weight: 600;">${item.name}</h4>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">$${item.price} × ${item.qty}</div>
+            </div>
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <button onclick="changeQty('${item.id}', -1)" style="padding: 2px 8px; border: 1px solid var(--border-medium); border-radius: 3px;">-</button>
+              <span style="font-size: 0.85rem; font-weight: 600; min-width: 20px; text-align: center;">${item.qty}</span>
+              <button onclick="changeQty('${item.id}', 1)" style="padding: 2px 8px; border: 1px solid var(--border-medium); border-radius: 3px;">+</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(x => x.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(x => x.id !== id);
+      } else if (item.qty > item.stock) {
+        item.qty = item.stock;
+        showToast(`Stock limit is ${item.stock} units.`);
+      }
+      updateCartUI();
+    }
+
+    function toggleCartDrawer(open) {
+      document.getElementById('cart-drawer-backdrop').style.display = open ? 'flex' : 'none';
+    }
+
+    function openProductModal(id) {
+      const p = PRODUCTS.find(x => x.id === id);
+      if (!p) return;
+
+      const isOut = p.stock <= 0;
+      document.getElementById('modal-product-content').innerHTML = `
+        <div style="position: relative;">
+          <img src="${p.image}" style="width: 100%; height: 100%; object-fit: cover; min-height: 400px;">
+        </div>
+        <div style="padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-olive">${p.category}</span>
+              <button onclick="closeProductModal()" style="font-size: 1.5rem; color: var(--text-muted);">&times;</button>
+            </div>
+            <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">${p.name}</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">${p.subtitle}</p>
+            <div style="font-size: 1.8rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-subtle);">
+              $${p.price}.00
+              ${p.originalPrice > p.price ? `<span style="font-size: 1.1rem; color: var(--text-muted); text-decoration: line-through; margin-left: 0.5rem;">$${p.originalPrice}</span>` : ''}
+            </div>
+            <p style="font-size: 0.9rem; line-height: 1.7; color: var(--text-primary); margin-bottom: 1.5rem;">${p.desc}</p>
+            <div style="font-size: 0.8rem; color: ${isOut ? 'var(--accent-rust)' : 'var(--accent-olive)'}; font-weight: 600; margin-bottom: 1.5rem;">
+              ${isOut ? 'Sold Out' : `In Stock (${p.stock} units available)`}
+            </div>
+          </div>
+          <button onclick="addToCart('${p.id}'); closeProductModal();" ${isOut ? 'disabled' : ''} class="btn btn-primary btn-full" style="padding: 1rem;">
+            ${isOut ? 'Out of Stock' : `Add to Bag · $${p.price}`}
+          </button>
+        </div>
+      `;
+      document.getElementById('product-modal-backdrop').style.display = 'flex';
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal-backdrop').style.display = 'none';
+    }
+
+    function openCheckoutModal() {
+      if (cart.length === 0) {
+        showToast('Your shopping bag is empty.');
+        return;
+      }
+      toggleCartDrawer(false);
+      renderCheckoutSummary();
+      document.getElementById('checkout-modal-backdrop').style.display = 'flex';
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkout-modal-backdrop').style.display = 'none';
+    }
+
+    function applyCheckoutPromo() {
+      const code = document.getElementById('chk-promo').value.trim().toUpperCase();
+      if (code === 'NOVA10') {
+        currentPromo = { code: 'NOVA10', rate: 0.10 };
+        document.getElementById('chk-promo-status').textContent = '✓ Promo NOVA10 applied: 10% discount';
+      } else if (code === 'WELCOME15') {
+        currentPromo = { code: 'WELCOME15', rate: 0.15 };
+        document.getElementById('chk-promo-status').textContent = '✓ Promo WELCOME15 applied: 15% discount';
+      } else {
+        showToast('Invalid promo code. Try NOVA10');
+      }
+      renderCheckoutSummary();
+    }
+
+    function renderCheckoutSummary() {
+      const subtotal = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
+      const discount = currentPromo ? (subtotal * currentPromo.rate) : 0;
+      const shipping = subtotal >= 100 ? 0 : 10;
+      const tax = (subtotal - discount) * 0.08;
+      const total = subtotal - discount + shipping + tax;
+
+      document.getElementById('chk-summary').innerHTML = `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+          <span>Items Subtotal:</span> <span>$${subtotal.toFixed(2)}</span>
+        </div>
+        ${discount > 0 ? `<div style="display: flex; justify-content: space-between; color: var(--accent-olive); margin-bottom: 0.35rem;"><span>Discount (${currentPromo.code}):</span> <span>-$${discount.toFixed(2)}</span></div>` : ''}
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+          <span>Carbon-Neutral Shipping:</span> <span>${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span>Sales Tax (8%):</span> <span>$${tax.toFixed(2)}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; border-top: 1px solid var(--border-medium); padding-top: 0.5rem;">
+          <span>Total Authorized:</span> <span>$${total.toFixed(2)}</span>
+        </div>
+      `;
+    }
+
+    function handlePlaceOrder(e) {
+      e.preventDefault();
+      const orderRef = 'NOVA-' + Math.floor(100000 + Math.random() * 900000);
+      const subtotal = cart.reduce((acc, i) => acc + i.price * i.qty, 0);
+      const discount = currentPromo ? (subtotal * currentPromo.rate) : 0;
+      const total = (subtotal - discount) * 1.08 + (subtotal >= 100 ? 0 : 10);
+
+      const itemsDesc = cart.map(i => `${i.name} (${i.qty})`).join(', ');
+
+      pastOrders.unshift({
+        orderNumber: orderRef,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        items: itemsDesc,
+        total: total,
+        status: "Confirmed"
+      });
+
+      // Deduct local stock
+      cart.forEach(item => {
+        const p = PRODUCTS.find(x => x.id === item.id);
+        if (p) p.stock = Math.max(0, p.stock - item.qty);
+      });
+
+      // Show Receipt
+      document.getElementById('receipt-ref').textContent = orderRef;
+      document.getElementById('receipt-details').innerHTML = `
+        <div style="margin-bottom: 0.5rem;"><strong>Recipient:</strong> ${document.getElementById('chk-name').value}</div>
+        <div style="margin-bottom: 0.5rem;"><strong>Delivery:</strong> ${document.getElementById('chk-street').value}, ${document.getElementById('chk-city').value}</div>
+        <div style="margin-bottom: 0.5rem;"><strong>Purchased Items:</strong> ${itemsDesc}</div>
+        <div><strong>Total Paid (Demo):</strong> $${total.toFixed(2)}</div>
+      `;
+
+      cart = [];
+      currentPromo = null;
+      updateCartUI();
+      closeCheckoutModal();
+      document.getElementById('receipt-modal-backdrop').style.display = 'flex';
+      showToast('Demo order authorized successfully!');
+    }
+
+    function closeReceiptModal() {
+      document.getElementById('receipt-modal-backdrop').style.display = 'none';
+      showSection('home');
+    }
+
+    function openAccountModal() {
+      document.getElementById('account-orders-list').innerHTML = pastOrders.map(o => `
+        <div style="background: var(--bg-secondary); padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; font-weight: 600;">
+            <span>${o.orderNumber}</span>
+            <span class="badge badge-olive">${o.status}</span>
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.75rem; margin: 0.2rem 0;">${o.date} · $${o.total.toFixed(2)}</div>
+          <div style="font-size: 0.8rem;">${o.items}</div>
+        </div>
+      `).join('');
+      document.getElementById('account-modal-backdrop').style.display = 'flex';
+    }
+
+    function closeAccountModal() {
+      document.getElementById('account-modal-backdrop').style.display = 'none';
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      showToast('Dispatch transmitted. Our studio team will reply in 24h.');
+      e.target.reset();
+    }
+
+    // Initialize
+    initHome();
+    setShopCategory('All');
+  </script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Facet — Shaping Digital Realities</title>
+  <meta name="description" content="Facet builds fast, accessible websites with real-time 3D where it helps.">
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --midnight: #06051a; --ink: #0e0c28; --violet: #7c5cff; --blue: #4aa8ff; --copper: #ff9a62; --text: #ece9ff; --muted: #a49fcb;
+  --glass: rgba(16, 13, 44, .62); --line: rgba(190, 180, 255, .28); --hero: 1;
+  --serif: "Newsreader", Georgia, serif; --sans: "Hanken Grotesk", system-ui, sans-serif; --pad: clamp(20px, 6vw, 96px);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: radial-gradient(1000px 700px at 62% 38%, #1b1556 0, transparent 65%), radial-gradient(800px 600px at 100% 0, #2a1d6b55, transparent 60%), var(--midnight); background-attachment: fixed; color: var(--text); font: 400 1.05rem/1.6 var(--sans); overflow-x: hidden; }
+#stage, #fg, .beam, .haze, .vignette { position: fixed; pointer-events: none; }
+#stage { inset: 0; width: 100%; height: 100%; z-index: 0; }
+#fg { inset: 0; width: 100%; height: 100%; z-index: 1; filter: blur(9px); opacity: var(--hero); }
+.beam { top: -12%; right: 8%; width: 36vw; height: 95vh; z-index: 0; background: linear-gradient(190deg, rgba(120, 110, 255, .5), rgba(120, 110, 255, .08) 60%, transparent); clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%); filter: blur(26px); mix-blend-mode: screen; opacity: calc(var(--hero) * .75); animation: beam 8s ease-in-out infinite; }
+.haze { right: -8vw; bottom: -14vh; width: 55vw; height: 55vh; z-index: 1; background: radial-gradient(closest-side, rgba(150, 110, 210, .45), transparent); filter: blur(30px); opacity: calc(var(--hero) * .9); animation: haze 14s ease-in-out infinite alternate; }
+.vignette { inset: 0; z-index: 1; background: radial-gradient(ellipse at 55% 45%, transparent 50%, rgba(2, 1, 10, .72)); }
+@keyframes beam { 0%, 100% { transform: translateX(0) skewX(-4deg); opacity: calc(var(--hero) * .6); } 50% { transform: translateX(-3vw) skewX(3deg); opacity: calc(var(--hero) * .95); } }
+@keyframes haze { from { transform: translate(0, 0) scale(1); } to { transform: translate(-6vw, -4vh) scale(1.15); } }
+main, .footer, .nav, .rail { position: relative; z-index: 3; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+body.no-webgl::after { content: ""; position: fixed; right: 14%; top: 50%; width: min(32vw, 340px); aspect-ratio: .62; transform: translateY(-50%); z-index: 0; pointer-events: none; background: linear-gradient(140deg, #9fb2ff, #5a3fd8 55%, #ff9a62); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); opacity: .75; }
+#loader { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: var(--midnight); color: var(--muted); letter-spacing: .3em; text-transform: uppercase; font-size: .72rem; transition: opacity .8s, visibility .8s; animation: loaderOut .5s 4s forwards; }
+#loader.done { opacity: 0; visibility: hidden; }
+@keyframes loaderOut { to { opacity: 0; visibility: hidden; } }
+
+/* navigation */
+.nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 22px var(--pad); z-index: 6; transition: background .4s, padding .4s, backdrop-filter .4s; }
+.nav.scrolled { background: rgba(8, 6, 28, .6); backdrop-filter: blur(14px); padding-block: 12px; }
+.logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; text-transform: uppercase; letter-spacing: .24em; font-size: .85rem; font-weight: 500; }
+.logo svg { transition: transform .8s; } .logo:hover svg { transform: rotateY(180deg); }
+.nav nav { display: flex; align-items: center; flex: 1; justify-content: space-between; margin-left: 6vw; }
+.menu { display: flex; gap: clamp(20px, 4vw, 64px); margin: 0 auto; }
+.menu a { position: relative; text-decoration: none; text-transform: uppercase; letter-spacing: .16em; font-size: .72rem; color: var(--text); padding: 8px 0 14px; opacity: .85; transition: opacity .3s; }
+.menu a sup { margin-left: 8px; font-size: .6rem; color: var(--muted); letter-spacing: .08em; }
+.menu a::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 4px; height: 4px; border-radius: 50%; background: var(--text); opacity: .55; transform: translateX(-50%); transition: transform .4s var(--ease), box-shadow .4s, opacity .3s; }
+.menu a:hover, .menu a.active { opacity: 1; } .menu a:hover::after { transform: translateX(-50%) scale(1.4); }
+.menu a.active::after { opacity: 1; background: #fff; transform: translateX(-50%) scale(1.5); box-shadow: 0 0 10px 2px var(--violet); }
+.contact { text-decoration: none; text-transform: uppercase; letter-spacing: .16em; font-size: .72rem; padding: 11px 24px; border: 1px solid var(--line); border-radius: 999px; transition: background .3s, border-color .3s, transform .25s; will-change: transform; }
+.contact:hover { background: rgba(124, 92, 255, .22); border-color: var(--violet); }
+.burger { display: none; background: none; border: 0; width: 44px; height: 44px; cursor: pointer; }
+.burger span { display: block; width: 22px; height: 1.5px; background: var(--text); margin: 6px auto; transition: transform .3s; }
+.burger[aria-expanded="true"] span:first-child { transform: translateY(3.75px) rotate(45deg); } .burger[aria-expanded="true"] span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+
+/* right rail */
+.rail { position: fixed; right: clamp(14px, 2vw, 30px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 16px; font-size: .64rem; letter-spacing: .24em; text-transform: uppercase; color: var(--muted); }
+.rail-label { writing-mode: vertical-rl; }
+.rail-line { position: relative; width: 1px; height: 22vh; background: var(--line); }
+.rail-line b { position: absolute; left: -4px; width: 9px; height: 9px; border: 1px solid var(--line); border-radius: 50%; background: var(--midnight); } .rail-line b:first-child { top: 28%; } .rail-line b:nth-child(2) { top: 72%; }
+.rail-line em { position: absolute; left: -3px; top: 0; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px var(--violet); transform: translateY(calc(var(--p, 0) * 22vh)); }
+.rail-count { display: flex; flex-direction: column; gap: 4px; align-items: center; letter-spacing: .1em; color: var(--text); } .rail-count span:last-child { color: var(--muted); }
+
+/* hero */
+section { padding: 120px var(--pad); scroll-margin-top: 20px; }
+.hero, .showcase { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
+.hero { position: relative; }
+.hero-copy { max-width: 600px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; margin: 0; letter-spacing: -.015em; }
+h1 { font-size: clamp(2.7rem, 5.8vw, 5rem); line-height: 1.04; font-weight: 300; }
+.ln { display: block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; } .ln > span { display: block; }
+h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); line-height: 1.1; margin-bottom: 40px; max-width: 18ch; } h3 { font-size: 1.5rem; margin-bottom: 8px; }
+.lead { color: var(--muted); max-width: 34ch; margin: 28px 0 36px; font-size: .98rem; font-weight: 300; }
+.explore { display: inline-flex; align-items: center; gap: 22px; text-decoration: none; text-transform: uppercase; letter-spacing: .2em; font-size: .7rem; padding: 10px 0; will-change: transform; }
+.explore i { position: relative; width: 46px; height: 1px; background: var(--text); transition: width .5s var(--ease); }
+.explore i::after { content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-top: 1px solid var(--text); border-right: 1px solid var(--text); transform: rotate(45deg); }
+.explore:hover i { width: 78px; }
+.hero-foot { position: absolute; left: var(--pad); right: var(--pad); bottom: 26px; display: flex; align-items: center; gap: 22px; }
+.line { height: 1px; background: var(--line); transform-origin: left; flex: 1; } .line.l1 { flex: 0 0 clamp(50px, 8vw, 120px); } .line.l2 { flex: 0 0 clamp(20px, 6vw, 90px); }
+.tag { font-size: .66rem; letter-spacing: .26em; text-transform: uppercase; color: var(--text); white-space: nowrap; }
+.sound { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--text); cursor: pointer; display: grid; place-items: center; flex: none; transition: background .3s, border-color .3s; }
+.sound:hover { border-color: var(--violet); } .sound[aria-pressed="true"] { background: rgba(124, 92, 255, .3); border-color: var(--violet); } .sound .x { display: block; } .sound[aria-pressed="true"] .x { display: none; } .sound .w { display: none; } .sound[aria-pressed="true"] .w { display: block; }
+
+/* intro animation */
+.js .ln > span { transform: translateY(112%); } .js .nav, .js .lead, .js .explore, .js .rail, .js .sound, .js .tag { opacity: 0; } .js .nav { transform: translateY(-16px); } .js .lead, .js .explore { transform: translateY(16px); }
+.js .line { transform: scaleX(0); }
+.ready .ln > span { transform: none; transition: transform 1.3s var(--ease); } .ready .ln:nth-child(2) > span { transition-delay: .15s; }
+.ready .nav { opacity: 1; transform: none; transition: opacity 1s .2s, transform 1s .2s var(--ease), background .4s, padding .4s; }
+.ready .lead, .ready .explore { opacity: 1; transform: none; transition: opacity 1s var(--ease), transform 1s var(--ease); } .ready .lead { transition-delay: .55s; } .ready .explore { transition-delay: .75s; }
+.ready .rail, .ready .sound, .ready .tag { opacity: 1; transition: opacity 1.2s 1.1s; }
+.ready .line { transform: none; transition: transform 1.6s 1s var(--ease); }
+
+/* sections */
+.panel { background: linear-gradient(180deg, transparent, rgba(6, 5, 26, .8) 140px, rgba(6, 5, 26, .8) calc(100% - 140px), transparent); }
+.btn { display: inline-block; padding: 14px 26px; border-radius: 999px; border: 1px solid var(--line); text-decoration: none; transition: background .25s, transform .25s; will-change: transform; }
+.btn:hover { background: rgba(124, 92, 255, .18); } .btn.primary { background: linear-gradient(120deg, var(--violet), var(--blue)); border-color: transparent; color: #fff; } .btn.big { padding: 18px 38px; font-size: 1.15rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; max-width: 1100px; }
+.card { padding: 30px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); position: relative; overflow: hidden; transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .2s, border-color .3s; }
+.card::after { content: ""; position: absolute; inset: 0; background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(124, 92, 255, .28), transparent 60%); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.card:hover { border-color: rgba(124, 92, 255, .6); } .card:hover::after { opacity: 1; } .card p, .steps p { color: var(--muted); margin: 0; }
+.show-ui { max-width: 420px; padding: 30px; border-radius: 22px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(12px); } .show-ui h2 { margin-bottom: 12px; font-size: 2.2rem; } .small { font-size: .85rem; color: var(--muted); }
+.toggles { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+.tog { padding: 10px 20px; min-height: 44px; border-radius: 999px; border: 1px solid var(--line); background: none; color: var(--text); font: inherit; cursor: pointer; transition: background .25s; } .tog.on { background: var(--violet); border-color: var(--violet); }
+.steps { list-style: none; margin: 0; padding: 0 0 0 28px; max-width: 640px; border-left: 1px solid var(--line); } .steps li { display: flex; gap: 22px; padding: 0 0 38px; position: relative; }
+.steps b { position: absolute; left: -47px; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); border: 1px solid var(--violet); font-weight: 500; } .steps li > div { padding-left: 14px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin: 0; max-width: 1000px; } .stats div { display: flex; flex-direction: column; gap: 8px; } .stats dt { color: var(--muted); max-width: 22ch; }
+.stats dd { margin: 0; font: 300 clamp(3rem, 7vw, 5rem)/1 var(--serif); order: -1; background: linear-gradient(120deg, #fff, var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cta { text-align: center; padding-block: 160px; } .cta h2 { margin-inline: auto; } .cta p { color: var(--muted); margin: -10px 0 32px; }
+.footer { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; padding: 56px var(--pad); background: var(--midnight); border-top: 1px solid var(--line); }
+.footer p { color: var(--muted); max-width: 36ch; font-size: .92rem; } .footer nav { display: flex; flex-direction: column; gap: 8px; } .footer nav a { color: var(--muted); text-decoration: none; } .footer nav a:hover { color: var(--text); }
+.js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .8s ease; } .js .reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 900px) {
+  .burger { display: block; } .nav nav { position: absolute; top: 64px; left: var(--pad); right: var(--pad); flex-direction: column; align-items: stretch; margin: 0; padding: 16px; border-radius: 20px; background: rgba(10, 8, 34, .95); border: 1px solid var(--line); display: none; }
+  .nav nav.open { display: flex; } .menu { flex-direction: column; gap: 0; margin: 0 0 12px; } .menu a { padding: 16px 4px; font-size: .8rem; } .menu a::after { left: auto; right: 6px; bottom: 50%; } .contact { text-align: center; }
+  .hero { align-items: flex-start; padding-top: 130px; } .showcase { align-items: flex-end; padding-bottom: 60px; } .rail { display: none; } .footer { grid-template-columns: 1fr; } section { padding-block: 90px; }
+  .tag { font-size: .58rem; letter-spacing: .16em; white-space: normal; text-align: center; } .line.l2, .line.l3 { display: none; } .line.l1 { flex: 1; } .beam { width: 70vw; right: -10%; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition-duration: .01ms !important; } .js .ln > span, .js .nav, .js .lead, .js .explore, .js .rail, .js .sound, .js .tag, .js .reveal { opacity: 1; transform: none; } .js .line { transform: none; } }
+
+  </style>
+</head>
+<body>
+  <canvas id="stage" aria-hidden="true"></canvas>
+  <div class="beam" aria-hidden="true"></div><div class="haze" aria-hidden="true"></div>
+  <canvas id="fg" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div id="loader" role="status">Loading</div>
+
+  <header class="nav" id="nav">
+    <a class="logo" href="#top" aria-label="Facet home"><svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><path d="M16 2 28 16 16 30 4 16Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 16h24M16 2v28" stroke="currentColor" stroke-width="1" opacity=".55"/></svg><span>Facet</span></a>
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="links" aria-label="Open menu"><span></span><span></span></button>
+    <nav id="links" aria-label="Primary">
+      <div class="menu">
+        <a href="#features">Work<sup>01</sup></a><a href="#showcase">About<sup>02</sup></a><a href="#process">Services<sup>03</sup></a><a href="#cases">Insights<sup>04</sup></a>
+      </div>
+      <a class="contact magnetic" href="#contact">Contact us</a>
+    </nav>
+  </header>
+
+  <aside class="rail" aria-hidden="true">
+    <span class="rail-label">Scroll</span>
+    <div class="rail-line"><b></b><b></b><em id="railDot"></em></div>
+    <span class="rail-count"><span id="cur">01</span><span id="tot">07</span></span>
+  </aside>
+
+  <main id="top">
+    <section class="hero" id="hero" data-scene="hero">
+      <div class="hero-copy">
+        <h1 aria-label="Shaping Digital Realities"><span class="ln"><span>Shaping</span></span><span class="ln"><span>Digital Realities</span></span></h1>
+        <p class="lead">We craft immersive websites that look sharp, load fast and feel alive.</p>
+        <a class="explore magnetic" href="#showcase"><span>Explore our work</span><i aria-hidden="true"></i></a>
+      </div>
+      <div class="hero-foot">
+        <button class="sound" id="sound" aria-pressed="false" aria-label="Turn ambient sound on"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9Z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="m17 9 5 6m0-6-5 6"/></svg></button>
+        <span class="line l1"></span><span class="line l2"></span>
+        <span class="tag">Innovation &middot; Creativity &middot; Impact</span>
+        <span class="line l3"></span>
+      </div>
+    </section>
+
+    <section id="features" class="panel" data-scene="side">
+      <h2 class="reveal">Built for people and for laptops</h2>
+      <div class="cards">
+        <article class="card tilt reveal"><h3>Real-time 3D, tuned</h3><p>One shared WebGL canvas, a capped pixel ratio and low-poly geometry keep scenes smooth on integrated graphics.</p></article>
+        <article class="card tilt reveal"><h3>Accessible by default</h3><p>Semantic markup, visible focus, keyboard navigation and a reduced-motion mode that calms every animation.</p></article>
+        <article class="card tilt reveal"><h3>Fast to load</h3><p>No image files and no heavy post-processing. Everything you see is drawn in code, and the page works without WebGL.</p></article>
+      </div>
+    </section>
+
+    <section id="showcase" class="showcase" data-scene="showcase">
+      <div class="show-ui reveal">
+        <h2>Pick a material</h2>
+        <p id="theme-note">Prism: cool glass with a copper rim light.</p>
+        <div class="toggles" role="group" aria-label="Crystal theme">
+          <button class="tog on" data-theme="prism" aria-pressed="true">Prism</button>
+          <button class="tog" data-theme="ember" aria-pressed="false">Ember</button>
+          <button class="tog" data-theme="frost" aria-pressed="false">Frost</button>
+        </div>
+        <p class="small">Move your pointer over the page. The crystal follows.</p>
+      </div>
+    </section>
+
+    <section id="process" class="panel" data-scene="side">
+      <h2 class="reveal">From brief to launch in four steps</h2>
+      <ol class="steps">
+        <li class="reveal"><b>1</b><div><h3>Brief</h3><p>We agree on the audience, the one action you want and the content that supports it.</p></div></li>
+        <li class="reveal"><b>2</b><div><h3>Prototype</h3><p>A clickable 3D sketch tests the idea on real devices before any polish.</p></div></li>
+        <li class="reveal"><b>3</b><div><h3>Build</h3><p>Clean modular code, a performance budget and accessibility checks at every step.</p></div></li>
+        <li class="reveal"><b>4</b><div><h3>Launch</h3><p>Production build, deployment and a short handover guide so you can maintain it.</p></div></li>
+      </ol>
+    </section>
+
+    <section id="stats" class="panel" data-scene="side" aria-label="Project facts">
+      <dl class="stats">
+        <div class="reveal"><dt>Target frames per second</dt><dd data-count="60">0</dd></div>
+        <div class="reveal"><dt>WebGL canvas shared by every section</dt><dd data-count="1">0</dd></div>
+        <div class="reveal"><dt>Crystal themes to explore</dt><dd data-count="3">0</dd></div>
+        <div class="reveal"><dt>Image files downloaded</dt><dd data-count="0">0</dd></div>
+      </dl>
+    </section>
+
+    <section id="cases" class="panel" data-scene="side">
+      <h2 class="reveal">Where it fits</h2>
+      <div class="cards">
+        <article class="card tilt reveal"><h3>Portfolio sites</h3><p>Give a personal portfolio one memorable object instead of ten competing effects.</p></article>
+        <article class="card tilt reveal"><h3>Product launches</h3><p>Let visitors rotate and compare a product's finishes before they read a spec sheet.</p></article>
+        <article class="card tilt reveal"><h3>Event microsites</h3><p>A single scrolling story with a clear sign-up, built to load quickly on mobile data.</p></article>
+      </div>
+    </section>
+
+    <section id="contact" class="panel cta" data-scene="side">
+      <h2 class="reveal">Have a project in mind?</h2>
+      <p class="reveal">Tell us what you're building and we'll reply with a plan and a timeline.</p>
+      <a class="btn primary big magnetic reveal" href="mailto:hello@example.com?subject=Project%20enquiry">Email the studio</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div><a class="logo" href="#top"><span>Facet</span></a><p>A portfolio project for the CODSOFT Web Development internship, drawn with hand-written WebGL.</p></div>
+    <nav aria-label="Footer"><a href="#features">Work</a><a href="#showcase">About</a><a href="#process">Services</a><a href="#cases">Insights</a></nav>
+    <nav aria-label="Social"><a href="https://github.com" target="_blank" rel="noopener">GitHub</a><a href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a></nav>
+  </footer>
+  <noscript><p style="position:fixed;bottom:0;padding:1rem;background:#000">JavaScript is needed for the 3D scene.</p></noscript>
+  <script>
+/* Facet hero renderer: hand-written WebGL (no library). Flat-shaded translucent crystals, rocks, dust. */
+(function () {
+  const M = {
+    id: () => [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1],
+    mul(a, b) { const o = new Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k*4+j] * b[i*4+k]; o[i*4+j] = s; } return o; },
+    persp(f, a, n, r) { const t = 1 / Math.tan(f / 2), d = n - r; return [t/a,0,0,0, 0,t,0,0, 0,0,(r+n)/d,-1, 0,0,2*r*n/d,0]; },
+    tr(x, y, z) { const m = M.id(); m[12] = x; m[13] = y; m[14] = z; return m; },
+    sc: (s) => [s,0,0,0, 0,s,0,0, 0,0,s,0, 0,0,0,1],
+    rx(a) { const c = Math.cos(a), s = Math.sin(a); return [1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]; },
+    ry(a) { const c = Math.cos(a), s = Math.sin(a); return [c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]; },
+    rz(a) { const c = Math.cos(a), s = Math.sin(a); return [c,s,0,0, -s,c,0,0, 0,0,1,0, 0,0,0,1]; },
+    m3: (m) => [m[0],m[1],m[2], m[4],m[5],m[6], m[8],m[9],m[10]],
+  };
+  const rng = (a) => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const sub = (a, b) => [a[0]-b[0], a[1]-b[1], a[2]-b[2]];
+  const cross = (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+
+  // Flat-shaded mesh: every triangle owns its vertices (position, face normal, barycentric)
+  function mesh(V, T) {
+    const c = V.reduce((s, v) => [s[0]+v[0], s[1]+v[1], s[2]+v[2]], [0,0,0]).map((x) => x / V.length), out = [];
+    T.forEach((t) => {
+      let [a, b, d] = t.map((i) => V[i]); let n = cross(sub(b, a), sub(d, a));
+      const m = [(a[0]+b[0]+d[0])/3-c[0], (a[1]+b[1]+d[1])/3-c[1], (a[2]+b[2]+d[2])/3-c[2]];
+      if (n[0]*m[0] + n[1]*m[1] + n[2]*m[2] < 0) { [b, d] = [d, b]; n = n.map((x) => -x); }
+      const l = Math.hypot(n[0], n[1], n[2]) || 1; n = n.map((x) => x / l);
+      [[a,[1,0,0]], [b,[0,1,0]], [d,[0,0,1]]].forEach(([p, q]) => out.push(p[0], p[1], p[2], n[0], n[1], n[2], q[0], q[1], q[2]));
+    });
+    return { data: new Float32Array(out), n: out.length / 9 };
+  }
+  // Jittered lathe: rings = [[y, radius], ...] between a top and bottom apex
+  function crystal(seed, sides, rings, top, bot, jit) {
+    const r = rng(seed), V = [], T = [], ox = (r() - .5) * jit, oz = (r() - .5) * jit;
+    V.push([ox * .6, top, oz * .6]); const first = 1;
+    rings.forEach(([y, rad], k) => { for (let i = 0; i < sides; i++) { const a = (i + (r() - .5) * jit) / sides * Math.PI * 2 + k * .4, q = rad * (1 + (r() - .5) * jit); V.push([Math.cos(a) * q + ox * k, y + (r() - .5) * jit * .5, Math.sin(a) * q + oz * k]); } });
+    V.push([-ox * .8, -bot, -oz * .8]); const last = V.length - 1;
+    for (let i = 0; i < sides; i++) T.push([0, first + i, first + (i + 1) % sides]);
+    for (let k = 0; k < rings.length - 1; k++) for (let i = 0; i < sides; i++) { const a = first + k*sides + i, b = first + k*sides + (i+1)%sides, c = a + sides, d = b + sides; T.push([a, b, c], [b, d, c]); }
+    const lo = first + (rings.length - 1) * sides;
+    for (let i = 0; i < sides; i++) T.push([last, lo + i, lo + (i + 1) % sides]);
+    return mesh(V, T);
+  }
+  function rock(seed, k) {
+    const t = (1 + Math.sqrt(5)) / 2, r = rng(seed);
+    let V = [[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]].map((v) => { const l = Math.hypot(...v); return v.map((x) => x / l); });
+    let T = [[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
+    for (let s = 0; s < k; s++) { const cache = {}, mid = (a, b) => { const key = a < b ? a + '_' + b : b + '_' + a; if (cache[key] === undefined) { const m = V[a].map((x, i) => (x + V[b][i]) / 2), l = Math.hypot(...m); cache[key] = V.push(m.map((x) => x / l)) - 1; } return cache[key]; }; const N = []; T.forEach(([a, b, c]) => { const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a); N.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]); }); T = N; }
+    const sx = .8 + r() * .6, sy = .6 + r() * .5, sz = .8 + r() * .6;
+    return mesh(V.map((v) => { const d = .7 + r() * .55; return [v[0] * d * sx, v[1] * d * sy, v[2] * d * sz]; }), T);
+  }
+
+  const VS = 'attribute vec3 aP,aN,aB;uniform mat4 uVP,uM;uniform mat3 uR;varying vec3 vN,vW,vB;void main(){vec4 w=uM*vec4(aP,1.);vW=w.xyz;vN=uR*aN;vB=aB;gl_Position=uVP*w;}';
+  const FS_GLASS = 'precision mediump float;varying vec3 vN,vW,vB;uniform vec3 uCam,uBase,uAcc,uHi;uniform float uAlpha,uSeed,uBack;' +
+    'vec3 env(vec3 r){float y=r.y*.5+.5;vec3 c=mix(uBase*.06,uBase*.85,y*y);c+=uAcc*smoothstep(.15,.95,r.x*.9-r.y*.35+.15)*1.05;c+=uHi*pow(max(dot(r,normalize(vec3(.4,.8,.45))),0.),22.)*1.1;c+=vec3(.15,.25,1.)*pow(max(dot(r,normalize(vec3(-.7,.3,.5))),0.),9.)*.6;return c;}' +
+    'void main(){vec3 N=normalize(vN);if(!gl_FrontFacing)N=-N;vec3 V=normalize(uCam-vW);float nv=max(dot(N,V),0.);vec3 R=reflect(-V,N);' +
+    'vec3 irid=.5+.5*cos(6.2832*(vec3(.0,.12,.24)+nv*1.1+uSeed));float d=max(dot(N,normalize(vec3(.5,.8,.6))),0.);' +
+    'vec3 col=uBase*(.08+.3*d)+env(R)*.7+irid*.16*(1.-nv*.5);float fr=pow(1.-nv,2.6);col+=fr*vec3(.18,.24,.6);' +
+    'float e=min(min(vB.x,vB.y),vB.z);col+=uHi*.5*(1.-smoothstep(0.,.022,e));col*=mix(1.,.55,uBack);' +
+    'gl_FragColor=vec4(col,clamp(uAlpha+fr*.25,0.,1.));}';
+  const FS_ROCK = 'precision mediump float;varying vec3 vN,vW,vB;uniform vec3 uBase;uniform float uAlpha,uLift;' +
+    'void main(){vec3 N=normalize(vN);float d=max(dot(N,normalize(vec3(.4,.7,.6))),0.);float h=fract(sin(dot(floor(vW*26.),vec3(12.9,78.2,37.7)))*43758.5);' +
+    'vec3 col=mix(vec3(.02,.018,.06),vec3(.17,.14,.36),d*.75+.1+uLift)*(.7+uBase*.3);col+=vec3(.95,.55,.28)*step(.985,h)*.4*d;' +
+    'float e=min(min(vB.x,vB.y),vB.z);col+=vec3(.25,.25,.6)*.1*(1.-smoothstep(0.,.04,e));gl_FragColor=vec4(col,uAlpha);}';
+  const VS_PT = 'attribute vec4 aP;attribute vec2 aS;uniform mat4 uVP;uniform float uT,uPx;varying float vC,vA;void main(){vec3 p=aP.xyz+vec3(sin(uT*.3+aP.w*6.),cos(uT*.25+aP.w*9.),sin(uT*.2+aP.w*3.))*.25;gl_Position=uVP*vec4(p,1.);gl_PointSize=max(aS.x*uPx/gl_Position.w,1.);vA=.5+.5*sin(uT*2.+aP.w*40.);vC=aS.y;}';
+  const FS_PT = 'precision mediump float;varying float vC,vA;uniform float uFade;void main(){float r=length(gl_PointCoord-.5)*2.;float a=smoothstep(1.,0.,r)*(.3+.9*vA)*uFade;gl_FragColor=vec4(mix(vec3(.7,.72,1.),vec3(1.,.62,.35),vC)*a,a);}';
+
+  window.FacetGL = function (canvas, kind) {
+    const gl = canvas.getContext('webgl', { alpha: true, antialias: true, premultipliedAlpha: true, powerPreference: 'low-power' });
+    if (!gl) throw new Error('WebGL unavailable');
+    const prog = (v, f) => { const p = gl.createProgram(); [[gl.VERTEX_SHADER, v], [gl.FRAGMENT_SHADER, f]].forEach(([t, s]) => { const sh = gl.createShader(t); gl.shaderSource(sh, s); gl.compileShader(sh); if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh)); gl.attachShader(p, sh); }); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; };
+    const glass = prog(VS, FS_GLASS), rockP = prog(VS, FS_ROCK), pts = prog(VS_PT, FS_PT);
+    const buf = (arr) => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.STATIC_DRAW); return b; };
+    const up = (m) => { m.buf = buf(m.data); return m; };
+    const loc = (p, n) => gl.getUniformLocation(p, n), U = {};
+    [glass, rockP].forEach((p, i) => { U[i] = {}; ['uVP','uM','uR','uCam','uBase','uAcc','uHi','uAlpha','uSeed','uBack','uLift'].forEach((n) => (U[i][n] = loc(p, n))); });
+    const drawMesh = (p, m) => { gl.bindBuffer(gl.ARRAY_BUFFER, m.buf); [['aP',0],['aN',3],['aB',6]].forEach(([n, o]) => { const a = gl.getAttribLocation(p, n); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 3, gl.FLOAT, false, 36, o * 4); }); gl.drawArrays(gl.TRIANGLES, 0, m.n); };
+
+    // ---- scene content ----
+    const items = [], rocks = [];
+    const hero = { mesh: up(crystal(7, 5, [[1.2, .6], [.15, 1.05], [-.95, .72]], 2.4, 2.7, .28)), seed: 0 };
+    const shardTypes = [
+      () => crystal(11, 4, [[.1, .5]], 1.5, 1.2, .35), () => crystal(12, 3, [[.2, .35]], 1.9, .5, .3), () => crystal(13, 5, [[.3, .5], [-.3, .45]], .9, .9, .5),
+      () => crystal(14, 4, [[.0, .2]], 1.7, 1.7, .2), () => crystal(15, 3, [[.1, .6]], .7, .6, .4), () => rock(21, 0),
+    ].map((f) => up(f()));
+    const rr = rng(99);
+    for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2 + rr() * .6, d = 2.0 + rr() * 2.6; items.push({ m: shardTypes[i % 6], lx: Math.cos(a) * d * 1.05, ly: (rr() - .5) * 5.4, lz: Math.sin(a) * d * .8 - .5, s: .28 + rr() * .42, sp: .15 + rr() * .5, ph: rr() * 6.3, seed: rr(), dly: rr() * .5 }); }
+    const rockMeshes = [up(rock(31, 1)), up(rock(32, 1)), up(rock(33, 1))];
+    const rockSet = kind === 'fg'
+      ? [[-3.9, -2.9, 3.6, 2.3, 0], [3.5, -3.4, 3.2, 2.0, 1], [-.2, -4.6, 4.2, 2.6, 2]]
+      : [[-3.9, -3.1, -1.5, .9, 0], [-5.2, -1.4, -3, .55, 1], [.6, -3.6, -2.2, .8, 2]];
+    rockSet.forEach(([x, y, z, s, k], i) => rocks.push({ m: rockMeshes[k], x, y, z, s, ph: i * 2 }));
+    const NP = kind === 'fg' ? 0 : 900, pa = new Float32Array(NP * 4), ps = new Float32Array(NP * 2), pr = rng(5);
+    for (let i = 0; i < NP; i++) { const cl = i < 380; pa.set(cl ? [2.6 + (pr() - .5) * 3.2, -.6 + (pr() - .5) * 3.4, (pr() - .5) * 3, pr()] : [(pr() - .5) * 17, (pr() - .5) * 9, (pr() - .5) * 8 - 1, pr()], i * 4); ps.set([(cl ? 4 : 3) + pr() * 8, cl ? (pr() < .7 ? 1 : 0) : (pr() < .15 ? 1 : 0)], i * 2); }
+    const pbuf = NP ? buf(pa) : null, sbuf = NP ? buf(ps) : null;
+
+    let W = 1, H = 1, dpr = 1;
+    const ease = (x) => 1 - Math.pow(1 - Math.min(Math.max(x, 0), 1), 3), back = (x) => { x = Math.min(Math.max(x, 0), 1); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+    return {
+      resize(w, h, d) { W = w; H = h; dpr = d; canvas.width = Math.round(w * d); canvas.height = Math.round(h * d); },
+      frame(t, c) {
+        gl.viewport(0, 0, canvas.width, canvas.height); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND);
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        const cam = [c.px * (kind === 'fg' ? 1.1 : .55), -c.py * (kind === 'fg' ? .7 : .38), 9];
+        const VP = M.mul(M.persp(.66, W / H, .5, 60), M.tr(-cam[0], -cam[1], -cam[2]));
+        const intro = c.intro, th = c.theme;
+        const setC = (u, alpha, seed, back, lift) => { gl.uniformMatrix4fv(u.uVP, false, VP); gl.uniform3fv(u.uCam, cam); gl.uniform3fv(u.uBase, th.base); gl.uniform3fv(u.uAcc, th.acc); gl.uniform3fv(u.uHi, th.hi); gl.uniform1f(u.uAlpha, alpha); gl.uniform1f(u.uSeed, seed); gl.uniform1f(u.uBack, back); gl.uniform1f(u.uLift, lift || 0); };
+        const put = (u, model, R) => { gl.uniformMatrix4fv(u.uM, false, model); gl.uniformMatrix3fv(u.uR, false, M.m3(R)); };
+        // rocks (opaque)
+        gl.useProgram(rockP); gl.enable(gl.CULL_FACE); gl.cullFace(gl.BACK); gl.depthMask(true);
+        setC(U[1], ease(intro * 1.4 - .2) * (kind === 'fg' ? .96 : 1), 0, 0, kind === 'fg' ? -.04 : 0);
+        rocks.forEach((r) => { const R = M.mul(M.ry(t * .05 + r.ph), M.rx(.4 + r.ph)); const sink = (1 - ease(intro)) * -2; put(U[1], M.mul(M.tr(r.x + Math.sin(t * .1 + r.ph) * .15, r.y + sink + Math.sin(t * .15 + r.ph) * .12, r.z), M.mul(R, M.sc(r.s))), R); drawMesh(rockP, r.m); });
+        if (kind === 'main') {
+          const [px, py, ps_, pz] = c.pose, gy = c.rotY, list = [];
+          const hs = ps_ * back(intro * 1.15), hy = py + Math.sin(t * .8) * .14;
+          list.push({ z: pz, m: hero.mesh, seed: 0, a: .9, model: () => { const R = M.mul(M.rz(.1 + c.px * .05), M.mul(M.ry(gy + c.px * .35), M.rx(c.rotX + c.py * .12 - .05))); return [M.mul(M.tr(px, hy, pz), M.mul(R, M.sc(hs))), R]; } });
+          items.forEach((s, i) => {
+            if (i >= c.shards) return; const e = ease((intro - s.dly * .5) * 1.3), fly = 1 + (1 - e) * 2.4;
+            const ox = s.lx * ps_ * fly, oy = (s.ly + Math.sin(t * s.sp + s.ph) * .35) * ps_ * fly, oz = s.lz * ps_ * fly, grp = M.ry(gy * .35 + t * .03);
+            const wz = pz + grp[2] * ox + grp[10] * oz;
+            list.push({ z: wz, m: s.m, seed: s.seed, a: .62, model: () => { const R = M.mul(M.rx(t * s.sp + s.ph), M.mul(M.ry(t * s.sp * 1.3 + s.ph * 2), M.rz(s.ph))); return [M.mul(M.tr(px, py, pz), M.mul(grp, M.mul(M.tr(ox, oy, oz), M.mul(R, M.sc(s.s * e * (.7 + ps_ * .3)))))), R]; } });
+          });
+          list.sort((a, b) => a.z - b.z);
+          gl.useProgram(glass);
+          list.forEach((o) => {
+            const [mm, R] = o.model();
+            [[gl.FRONT, 1, false], [gl.BACK, 0, true]].forEach(([cull, bk, dw]) => { gl.cullFace(cull); gl.depthMask(dw); setC(U[0], o.a * (bk ? .75 : 1), o.seed, bk); put(U[0], mm, R); drawMesh(glass, o.m); });
+          });
+          gl.depthMask(true);
+        }
+        gl.disable(gl.CULL_FACE);
+        if (NP) {
+          gl.useProgram(pts); gl.depthMask(false); gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE);
+          gl.uniformMatrix4fv(loc(pts, 'uVP'), false, VP); gl.uniform1f(loc(pts, 'uT'), t); gl.uniform1f(loc(pts, 'uPx'), 5 * dpr * (H / 800)); gl.uniform1f(loc(pts, 'uFade'), ease(intro * 1.2 - .1) * c.dust);
+          const a1 = gl.getAttribLocation(pts, 'aP'), a2 = gl.getAttribLocation(pts, 'aS');
+          gl.bindBuffer(gl.ARRAY_BUFFER, pbuf); gl.enableVertexAttribArray(a1); gl.vertexAttribPointer(a1, 4, gl.FLOAT, false, 0, 0);
+          gl.bindBuffer(gl.ARRAY_BUFFER, sbuf); gl.enableVertexAttribArray(a2); gl.vertexAttribPointer(a2, 2, gl.FLOAT, false, 0, 0);
+          gl.drawArrays(gl.POINTS, 0, c.particles); gl.depthMask(true);
+        }
+      },
+    };
+  };
+})();
+
+  </script>
+  <script>
+(function () {
+  'use strict';
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const root = document.documentElement, body = document.body;
+
+  /* ---------- themes and scene state ---------- */
+  const THEMES = {
+    prism: { base: [.3, .36, 1], acc: [1, .58, .36], hi: [.75, .82, 1], note: 'Prism: cool glass with a copper rim light.' },
+    ember: { base: [1, .42, .25], acc: [1, .8, .45], hi: [1, .85, .7], note: 'Ember: warm facets lit from below.' },
+    frost: { base: [.45, .8, 1], acc: [.7, .6, 1], hi: [.9, .97, 1], note: 'Frost: pale ice with a violet edge.' },
+  };
+  const POSE = { hero: { d: [1.5, 0, .95, 0], m: [0, -1.95, .56, 0] }, showcase: { d: [0, 0, 1.2, .6], m: [0, 1.1, .72, 0] }, side: { d: [3.3, 0, .5, -3.5], m: [0, 0, .36, -4] } };
+  const cur = { pose: [1.5, 0, .95, 0], theme: { base: [...THEMES.prism.base], acc: [...THEMES.prism.acc], hi: [...THEMES.prism.hi] }, px: 0, py: 0, rotY: 0, dust: 1 };
+  let target = THEMES.prism, section = 'hero', scrollP = 0, A = null, B = null, mobile = false, running = false;
+  const pointer = { x: 0, y: 0 };
+
+  function size() {
+    const w = innerWidth, h = innerHeight; mobile = w < 900;
+    const dpr = Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.6);
+    A.resize(w, h, dpr); B.resize(w, h, dpr * .6);
+  }
+  const t0 = performance.now();
+  function frame() {
+    const t = reduced ? 4 : (performance.now() - t0) / 1000, k = reduced ? 1 : .06;
+    const p = POSE[section] || POSE.side, tp = mobile ? p.m : p.d;
+    cur.pose = cur.pose.map((v, i) => v + (tp[i] - v) * k);
+    ['base', 'acc', 'hi'].forEach((n) => (cur.theme[n] = cur.theme[n].map((v, i) => v + (target[n][i] - v) * .05)));
+    cur.px += (pointer.x - cur.px) * .05; cur.py += (pointer.y - cur.py) * .05;
+    cur.dust += ((section === 'hero' || section === 'showcase' ? 1 : .45) - cur.dust) * .05;
+    const c = { pose: cur.pose, theme: cur.theme, px: cur.px, py: cur.py, rotY: (reduced ? .7 : t * .22) + scrollP * Math.PI * 3, rotX: scrollP * .6, intro: reduced ? 1 : Math.min(t / 2.8, 1), shards: mobile ? 9 : 18, particles: mobile ? 450 : 900, dust: cur.dust };
+    A.frame(t, c); B.frame(t, c);
+  }
+  function loop() { if (!running) return; frame(); if (!reduced) requestAnimationFrame(loop); }
+  function initGL() {
+    const loader = $('#loader');
+    try {
+      if (typeof FacetGL === 'undefined') throw new Error('renderer missing');
+      A = FacetGL($('#stage'), 'main'); B = FacetGL($('#fg'), 'fg'); size(); running = true; loop();
+      addEventListener('resize', () => { size(); if (reduced) frame(); });
+      document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) loop(); });
+    } catch (err) { console.warn('3D scene unavailable, showing static fallback.', err); body.classList.add('no-webgl'); }
+    loader.classList.add('done'); requestAnimationFrame(() => requestAnimationFrame(() => body.classList.add('ready')));
+  }
+  addEventListener('pointermove', (e) => { pointer.x = (e.clientX / innerWidth) * 2 - 1; pointer.y = (e.clientY / innerHeight) * 2 - 1; }, { passive: true });
+  initGL();
+
+  /* ---------- navigation ---------- */
+  const burger = $('#burger'), links = $('#links');
+  const setMenu = (open) => { links.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open)); burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
+  burger.addEventListener('click', () => setMenu(!links.classList.contains('open')));
+  links.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+
+  const sections = $$('main > section'); $('#tot').textContent = String(sections.length).padStart(2, '0');
+  const spy = new IntersectionObserver((entries) => entries.forEach((en) => {
+    if (!en.isIntersecting) return;
+    const id = en.target.id; section = en.target.dataset.scene || 'side';
+    $$('#links .menu a').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    $('#cur').textContent = String(sections.indexOf(en.target) + 1).padStart(2, '0');
+  }), { rootMargin: '-45% 0px -45% 0px' });
+  sections.forEach((s) => spy.observe(s));
+
+  let ticking = false;
+  function onScroll() {
+    const max = root.scrollHeight - innerHeight; scrollP = max > 0 ? scrollY / max : 0;
+    root.style.setProperty('--p', scrollP.toFixed(4)); root.style.setProperty('--hero', Math.max(0, 1 - scrollY / (innerHeight * .8)).toFixed(3));
+    $('#nav').classList.toggle('scrolled', scrollY > 40); $('#railDot').parentElement.style.setProperty('--p', scrollP.toFixed(4)); ticking = false;
+    if (reduced && A) frame();
+  }
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true }); onScroll();
+
+  /* ---------- reveals and counters ---------- */
+  function count(el) {
+    const end = +el.dataset.count; if (reduced || end === 0) { el.textContent = end; return; }
+    const s = performance.now(); (function tick(now) { const t = Math.min((now - s) / 1400, 1); el.textContent = Math.round(end * (1 - Math.pow(1 - t, 3))); if (t < 1) requestAnimationFrame(tick); })(s);
+  }
+  const io = new IntersectionObserver((entries, obs) => entries.forEach((en) => {
+    if (!en.isIntersecting) return; en.target.classList.add('in'); const n = $('[data-count]', en.target); if (n) count(n); obs.unobserve(en.target);
+  }), { threshold: 0.25 });
+  $$('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 4) * 90 + 'ms'; io.observe(el); });
+
+  /* ---------- tilt cards and magnetic buttons (fine pointers) ---------- */
+  if (!reduced && matchMedia('(hover: hover)').matches) {
+    $$('.tilt').forEach((card) => {
+      card.addEventListener('pointermove', (e) => { const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; card.style.setProperty('--ry', ((x - .5) * 12).toFixed(2) + 'deg'); card.style.setProperty('--rx', ((.5 - y) * 12).toFixed(2) + 'deg'); card.style.setProperty('--mx', x * 100 + '%'); card.style.setProperty('--my', y * 100 + '%'); });
+      card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+    });
+    $$('.magnetic').forEach((b) => {
+      b.addEventListener('pointermove', (e) => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .2}px, ${(e.clientY - r.top - r.height / 2) * .3}px)`; });
+      b.addEventListener('pointerleave', () => (b.style.transform = ''));
+    });
+  }
+
+  /* ---------- showcase themes ---------- */
+  $$('.tog').forEach((btn) => btn.addEventListener('click', () => {
+    $$('.tog').forEach((b) => { const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+    target = THEMES[btn.dataset.theme]; $('#theme-note').textContent = A ? target.note : 'The 3D scene is unavailable on this device.'; if (reduced && A) frame();
+  }));
+
+  /* ---------- ambient sound (off by default) ---------- */
+  let ac = null, master = null;
+  $('#sound').addEventListener('click', function () {
+    const on = this.getAttribute('aria-pressed') !== 'true';
+    this.setAttribute('aria-pressed', String(on)); this.setAttribute('aria-label', on ? 'Turn ambient sound off' : 'Turn ambient sound on');
+    try {
+      if (on) {
+        if (!ac) {
+          ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0;
+          const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 650; f.connect(master); master.connect(ac.destination);
+          [110, 164.8, 220.4, 277.2].forEach((fr, i) => {
+            const o = ac.createOscillator(), g = ac.createGain(), l = ac.createOscillator(), lg = ac.createGain();
+            o.type = i % 2 ? 'sine' : 'triangle'; o.frequency.value = fr; g.gain.value = .1; l.frequency.value = .07 + i * .03; lg.gain.value = .06;
+            l.connect(lg); lg.connect(g.gain); o.connect(g); g.connect(f); o.start(); l.start();
+          });
+        }
+        ac.resume(); master.gain.setTargetAtTime(.45, ac.currentTime, .8);
+      } else if (ac) master.gain.setTargetAtTime(0, ac.currentTime, .4);
+    } catch (e) { this.setAttribute('aria-pressed', 'false'); }
+  });
+})();
+
+  </script>
+</body>
+</html>
